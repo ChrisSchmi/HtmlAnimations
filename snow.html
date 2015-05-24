@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+ <meta charset="UTF-8" />
+ <style>
+	 body {
+  margin: 0;
+  overflow: hidden;
+}
+canvas :hover {
+    cursor: none;
+  }
+ </style>
+</head>
+
+<body>
+	<canvas></canvas>
+	<script>
+		(function(){
+  window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame;
+
+  var canvas = document.querySelector("canvas");
+  canvas.width = window.innerWidth
+  canvas.height = window.innerHeight;
+  var ctx = canvas.getContext("2d");
+  ctx.globalCompositeOperation = "source-over"; 
+  var snowballs = [];
+  var pIndex = 0;
+  var total = 5, x, y, frameId;
+
+
+  function Snowball(){
+    this.x = (Math.random() * canvas.width - 1);
+    this.y = -10;
+    this.vx = 0;
+    this.vy = 1+Math.abs((Math.random() * 12 - 9));
+    this.color = '#ffffff';
+    snowballs[pIndex] = this;
+    this.id = pIndex;
+    pIndex++;
+    this.life = 0;
+    this.gravity = .05;
+    this.size = 2; 
+  }
+
+  Snowball.prototype.draw = function(){
+    this.y += this.vy;
+
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.size, 0, 2 * Math.PI, false);
+      ctx.fillStyle = this.color;
+      ctx.fill();
+      ctx.lineWidth = 5;
+
+    if(this.y > canvas.height){
+      delete snowballs[this.id];
+      new Snowball();
+    }
+  };
+
+  window.addEventListener("resize", function(){
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    x = canvas.width / 2;
+    y = canvas.height / 2;
+  });
+
+  function loop(){
+    ctx.fillStyle = "rgba(0, 0, 0, .6)";
+    ctx.fillRect(0,0, canvas.width, canvas.height);
+
+    for(var i in snowballs){
+      snowballs[i].draw();
+    }
+    frameId = requestAnimationFrame(loop);
+  }
+  
+  function init()
+  {
+    for(var i=0; i<100; i++){
+     new Snowball();
+    }
+  }
+  
+  init();
+  loop();
+})();
+	</script>
+</body>
+
+</html>

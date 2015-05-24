@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+ <meta charset="UTF-8" />
+ <style>
+	 body {
+  margin: 0;
+  overflow: hidden;
+}
+canvas :hover {
+    cursor: none;
+  }
+ </style>
+</head>
+
+<body>
+	<canvas></canvas>
+	<script>
+		(function(){
+  window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame;
+
+  var canvas = document.querySelector("canvas");
+  canvas.width = window.innerWidth
+  canvas.height = window.innerHeight;
+  var ctx = canvas.getContext("2d");
+  ctx.globalCompositeOperation = "source-over"; 
+  var squares = [];
+  var pIndex = 0;
+  var total = 5, x, y, frameId;
+
+
+  function Square(){
+    this.x = (Math.random() * canvas.width - 3);//x || canvas.width / 2;
+    this.y = -10; // y || canvas.height / 2;
+    this.vx = 0;//(Math.random() * 10 - 3);
+    this.vy = Math.pow((Math.random() * 12 - 9),2);
+    this.color = "hsla( " + parseInt( Math.random() * 360)  + "  , 50%, 50%, .6)";
+    squares[pIndex] = this;
+    this.id = pIndex;
+    pIndex++;
+    this.life = 0;
+    this.gravity = .05;
+    this.size = parseInt(Math.random() * 100);
+    this.maxlife = 100;
+  }
+
+  Square.prototype.draw = function(){
+    this.x += this.vx;
+    this.y += this.vy;
+    this.vy += this.gravity;
+    var radius =  this.size;
+
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, radius, 0, 2 * Math.PI, false);
+      ctx.fillStyle = this.color;
+      ctx.fill();
+      ctx.lineWidth = 5;
+   
+    this.life++;
+    if(this.life >= this.maxlife){
+      delete squares[this.id];
+    }
+  };
+
+  window.addEventListener("resize", function(){
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    x = canvas.width / 2;
+    y = canvas.height / 2;
+  });
+
+  function loop(){
+    ctx.fillStyle = "rgba(0, 0, 0, .6)";
+    ctx.fillRect(0,0, canvas.width, canvas.height);
+    for(var i=0; i<total; i++){
+     new Square();
+    }
+    for(var i in squares){
+      squares[i].draw();
+    }
+    frameId = requestAnimationFrame(loop);
+  }
+  loop();
+})();
+	</script>
+</body>
+
+</html>
